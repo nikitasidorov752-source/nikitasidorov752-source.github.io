@@ -1,0 +1,653 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Smart Calculators — математические калькуляторы и тренажёры</title><meta name="description" content="Бесплатные онлайн-калькуляторы: дроби, проценты, НОД и НОК, степени и корни, квадратные уравнения, неравенства, геометрия, оценки и аттестат. Точные вычисления без ошибок округления."><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='42' font-size='30' font-family='Arial' font-weight='800' fill='%23fff' text-anchor='middle'%3E%u2211%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#f3f5f9;--card:#fff;--text:#1b2028;--muted:#6b7280;--line:#e6e9ee;--blue:#2f5bff;--blue-dark:#1f45db;--blue-light:#eef2ff;--green:#16a34a;--red:#dc2626;--red-bg:#fef2f2;--radius:16px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select{font:inherit}
+.wrap{max-width:1180px;margin:auto;padding:0 20px}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+header{position:sticky;top:0;background:#fffffff2;backdrop-filter:blur(6px);border-bottom:1px solid var(--line);z-index:30}
+.top{height:66px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.logo{font-weight:800;font-size:19px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.logo .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--blue),#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav a{color:var(--text);font-weight:600;font-size:14px;padding:8px 12px;border-radius:9px}
+.nav a:hover{background:var(--blue-light);text-decoration:none;color:var(--blue)}
+
+.hero{background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);padding:38px 0 22px;border-bottom:1px solid var(--line)}
+.hero h1{font-size:32px;margin:0 0 8px;letter-spacing:-.02em}
+.hero p{color:var(--muted);margin:0 0 18px;max-width:640px}
+.search-wrap{position:relative;max-width:640px}
+.search-wrap input{width:100%;padding:15px 18px;border:1px solid var(--line);border-radius:14px;font-size:15px;box-shadow:0 2px 10px #0000000d}
+.search-results{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px #00000018;overflow:hidden;z-index:40;display:none}
+.search-results a{display:block;padding:11px 16px;color:var(--text);border-bottom:1px solid var(--line)}
+.search-results a:last-child{border-bottom:none}
+.search-results a:hover{background:var(--blue-light);text-decoration:none}
+.search-results .cat{color:var(--muted);font-size:12px}
+
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 4px}
+.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 15px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text)}
+.pill.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+main{padding:26px 0 60px}
+h2{font-size:21px;margin:30px 0 12px;letter-spacing:-.01em}
+.muted{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.calc-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;transition:.15s;box-shadow:0 1px 3px #0000000a}
+.calc-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 8px 20px #2f5bff1a}
+.calc-card .name{font-weight:700;display:block;margin-bottom:4px}
+.calc-card .desc{color:var(--muted);font-size:13px}
+.calc-card .badge{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-light);padding:3px 8px;border-radius:999px}
+
+.panel-overlay{position:fixed;inset:0;background:#10152699;display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto;z-index:100}
+.panel-overlay.open{display:flex}
+.panel{background:#fff;border-radius:18px;max-width:760px;width:100%;padding:26px;position:relative;box-shadow:0 30px 80px #00000033;margin-bottom:30px}
+.panel h3{margin:0 0 4px;font-size:22px}
+.panel .close{position:absolute;top:16px;right:16px;border:none;background:#f1f3f8;width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:16px}
+.field{margin:12px 0}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}
+.field input,.field select{width:100%;padding:11px;border:1px solid #ccd3db;border-radius:10px;background:#fff}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:#f8fafc;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn.primary:hover{background:var(--blue-dark)}
+.btn.remove{background:#fee2e2;color:#991b1b;border-color:#fecaca}
+.rounding{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;align-items:center;font-size:13px}
+.rounding button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.result-box{margin-top:14px;padding:14px;background:var(--blue-light);border-radius:12px;border:1px solid #dbe3ff}
+.result-box .label{font-size:12px;color:var(--muted);margin-bottom:3px}
+.result-box .value{font-size:22px;font-weight:800;word-break:break-word}
+.error-box{margin-top:14px;padding:13px;background:var(--red-bg);color:#991b1b;border-radius:12px;border:1px solid #fecaca}
+.steps{margin-top:12px;padding:13px;background:#f8fafc;border:1px solid var(--line);border-radius:12px;font-size:14px}
+.steps ol{margin:6px 0 0;padding-left:19px}
+.odz{margin-top:6px;font-size:13px;color:var(--muted)}
+.formula{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px 13px;margin:8px 0;font-size:15px}
+.subject{border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0}
+.subject .head{display:flex;gap:8px;margin-bottom:8px}
+.subject .head input{flex:1}
+.gradesrow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.total{margin-top:12px;padding:13px;background:var(--blue-light);border-radius:12px}
+.total strong{font-size:22px}
+.display{width:100%;font-size:28px;text-align:right;padding:13px;border:1px solid #cbd5e1;border-radius:10px;background:#f8fafc}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
+.keys button{padding:12px 5px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer}
+.password{font-size:19px;word-break:break-all;padding:12px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+.check{display:block;margin:6px 0;font-size:14px}
+.ad{min-height:80px;border:1px dashed #cbd5e1;background:#f8fafc;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;margin:20px 0;text-align:center;padding:8px}
+.trainer-q{font-size:24px;font-weight:800;margin:12px 0}
+.trainer-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin:12px 0}
+.trainer-opts button{padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;font-size:16px}
+.trainer-opts button.correct{background:#dcfce7;border-color:var(--green)}
+.trainer-opts button.wrong{background:var(--red-bg);border-color:var(--red)}
+.trainer-stats{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:6px}
+.trainer-stats b{color:var(--text)}
+.answer-row{display:flex;gap:8px;margin:10px 0}
+.answer-row input{flex:1;padding:11px;border:1px solid #ccd3db;border-radius:10px;font-size:17px}
+.feedback{font-weight:700;margin-top:6px}
+.feedback.ok{color:var(--green)}
+.feedback.bad{color:var(--red)}
+section.info{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:16px}
+section.info h2{margin-top:0}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:13px;background:#fff}
+footer .flinks{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+footer a{color:var(--muted);text-decoration:underline}
+@media(max-width:800px){.row2,.row3,.gradesrow{grid-template-columns:1fr 1fr}.top{flex-wrap:wrap;height:auto;min-height:56px;padding:10px 0;row-gap:6px}.nav{font-size:13px;width:100%;justify-content:flex-start}}
+@media(max-width:480px){.hero h1{font-size:25px}.gradesrow{grid-template-columns:1fr}.panel{padding:18px}.nav a{padding:6px 9px;font-size:12px}.logo{font-size:16px}}
+</style></head>
+<body>
+
+<header><div class="wrap top">
+<div class="logo"><span class="mark">∑</span> Smart Calculators</div>
+<nav class="nav">
+<a href="#calculators">Калькуляторы</a>
+<a href="#trainers">Тренажёры</a>
+<a href="#about">О сайте</a>
+</nav>
+</div></header>
+
+<div class="hero"><div class="wrap">
+<h1>Математические калькуляторы и тренажёры</h1>
+<p>Бесплатные онлайн-инструменты для учёбы. Точные вычисления без ошибок округления и без научной записи для больших чисел.</p>
+<div class="search-wrap">
+<input id="search" type="text" placeholder="Найти калькулятор: дроби, НОД, площадь..." autocomplete="off">
+<div id="searchResults" class="search-results"></div>
+</div>
+<div class="pills" id="pills"></div>
+</div></div>
+
+<main class="wrap">
+<section id="calculators">
+<h2>Калькуляторы</h2>
+<div class="grid" id="calcGrid"></div>
+</section>
+
+<div class="ad">Рекламный блок (заглушка) — здесь позже может быть Google AdSense</div>
+
+<section id="trainers">
+<h2>Тренажёры</h2>
+<p class="muted">Случайные задания, счёт правильных ответов и таймер. 10 вопросов за сессию.</p>
+<div class="grid" id="trainerGrid"></div>
+</section>
+
+<div class="ad">Рекламный блок (заглушка) — здесь позже может быть Google AdSense</div>
+
+<section id="about" class="info">
+<h2>О сайте Smart Calculators</h2>
+<p>Smart Calculators — бесплатный сайт с математическими калькуляторами и тренажёрами для школьников, студентов и всех, кому нужны быстрые и точные расчёты.</p>
+<p>На сайте собраны инструменты для арифметики, алгебры, геометрии, дробей, степеней и корней, а также калькуляторы среднего балла и аттестата. Раздел «Тренажёры» помогает отрабатывать устный счёт в игровой форме.</p>
+<p>Все калькуляторы предназначены для справочных и учебных целей. Список инструментов постоянно пополняется.</p>
+</section>
+
+<section id="privacy" class="info">
+<h2>Политика конфиденциальности</h2>
+<p>Все вычисления выполняются прямо в вашем браузере. Введённые числа и выражения никуда не отправляются и не сохраняются сайтом. Файлы cookie для отслеживания не используются. В будущем на сайте может появиться реклама (например, Google AdSense) — эта страница будет обновлена при подключении.</p>
+</section>
+
+<section id="terms" class="info">
+<h2>Условия использования</h2>
+<p>Калькуляторы предоставляются «как есть» для справочных и учебных целей. Несмотря на стремление к точности, сайт не гарантирует отсутствие ошибок и не несёт ответственности за решения, принятые на основе расчётов. Сайт бесплатен для использования.</p>
+</section>
+</main>
+
+<div class="panel-overlay" id="overlay"><div class="panel" id="panel"></div></div>
+
+<footer><div class="wrap">
+<div class="flinks"><a href="#about">О сайте</a><a href="#privacy">Политика конфиденциальности</a><a href="#terms">Условия использования</a></div>
+<div class="ad">Рекламный блок (заглушка) — здесь позже может быть Google AdSense</div>
+<div>© 2026 Smart Calculators. Калькуляторы предназначены для справочных и учебных целей.</div>
+</div></footer>
+
+<script>
+/* ============================================================
+   ТОЧНАЯ АРИФМЕТИКА (без ошибок float, BigInt для больших чисел)
+   ============================================================ */
+class MErr extends Error{}
+function divZeroErr(zeroNum){ return new MErr(zeroNum? 'Ошибка: деление на ноль невозможно.' : 'Ошибка: выражение 0/0 не имеет определённого значения.'); }
+function bgcd(a,b){a=a<0n?-a:a;b=b<0n?-b:b;while(b){[a,b]=[b,a%b];}return a;}
+
+class Fr{
+  constructor(n,d=1n){ if(typeof n!=='bigint')n=BigInt(n); if(typeof d!=='bigint')d=BigInt(d);
+    if(d===0n) throw divZeroErr(n!==0n); if(d<0n){n=-n;d=-d;} const g=bgcd(n,d)||1n; this.n=n/g; this.d=d/g; }
+  static fromStr(s){ s=String(s).trim().replace(',', '.'); if(!/^[-+]?\d*\.?\d+$/.test(s)) throw new MErr('Не удалось распознать число: "'+s+'"');
+    let neg=false; if(s[0]==='+')s=s.slice(1); if(s[0]==='-'){neg=true;s=s.slice(1);}
+    let [i,f='']=s.split('.'); if(i==='')i='0'; const num=BigInt(i+f); const den=10n**BigInt(f.length);
+    return new Fr(neg?-num:num, den); }
+  static int(i){return new Fr(BigInt(i),1n);}
+  static fromNum(x){ if(!isFinite(x)) throw new MErr('Ошибка: результат не является конечным числом.'); return Fr.fromStr(x.toFixed(12)); }
+  add(o){return new Fr(this.n*o.d+o.n*this.d, this.d*o.d);}
+  sub(o){return new Fr(this.n*o.d-o.n*this.d, this.d*o.d);}
+  mul(o){return new Fr(this.n*o.n, this.d*o.d);}
+  div(o){ if(o.n===0n) throw divZeroErr(this.n!==0n); return new Fr(this.n*o.d, this.d*o.n); }
+  neg(){return new Fr(-this.n,this.d);}
+  abs(){return this.n<0n?this.neg():this;}
+  isZero(){return this.n===0n;}
+  isNeg(){return this.n<0n;}
+  cmp(o){const l=this.n*o.d,r=o.n*this.d;return l<r?-1:l>r?1:0;}
+  eq(o){return this.cmp(o)===0;}
+  pow(nInt){ if(nInt<0) return Fr.int(1).div(this.pow(-nInt)); let r=Fr.int(1),b=this,e=nInt; while(e>0){if(e&1)r=r.mul(b); b=b.mul(b); e>>=1;} return r; }
+  exactSqrt(){ if(this.isNeg())return null; const sb=(x)=>{ if(x<0n)return null; if(x<2n)return x; let lo=0n,hi=x; while(lo<hi){const mid=(lo+hi+1n)>>1n; if(mid*mid<=x)lo=mid; else hi=mid-1n;} return lo*lo===x?lo:null; };
+    const sn=sb(this.n),sd=sb(this.d); if(sn===null||sd===null)return null; return new Fr(sn,sd); }
+  toStr(digits){ const neg=this.n<0n; let n=neg?-this.n:this.n; const d=this.d; const ip=n/d; let rem=n%d;
+    if(digits===null||digits===undefined){ let dd=d; while(dd%2n===0n)dd/=2n; while(dd%5n===0n)dd/=5n; const term=dd===1n; const MAX=term?30:20;
+      let arr=[],r=rem,trunc=false; for(let i=0;i<MAX;i++){ if(r===0n)break; r*=10n; arr.push(r/d); r%=d; if(i===MAX-1&&r!==0n)trunc=true; }
+      let out=(neg?'-':'')+ip.toString(); if(arr.length)out+='.'+arr.join(''); if(trunc)out+='…'; return out; }
+    const scale=10n**BigInt(digits); const sN=n*scale; let q=sN/d; const r2=sN%d; if(r2*2n>=d)q+=1n;
+    let qs=q.toString().padStart(digits+1,'0'); let oi,of; if(digits===0){oi=qs;of='';}else{oi=qs.slice(0,qs.length-digits)||'0';of=qs.slice(qs.length-digits);}
+    return (neg&&q!==0n?'-':'')+oi+(digits>0?'.'+of:''); }
+  toNum(){return Number(this.n)/Number(this.d);}
+}
+function fmt(fr, mode){ return fr.toStr(mode==='none'||mode==null?null:Number(mode)); }
+function fmtNum(x, mode){ if(!isFinite(x)) throw new MErr('Ошибка: результат не является конечным числом.'); if(Number.isNaN(x)) throw new MErr('Ошибка: результат не определён.');
+  try{ return fmt(Fr.fromNum(x), mode); }catch(e){ return String(x); } }
+function anyNum(s,name){ if(s===undefined||s===null||String(s).trim()==='') throw new MErr('Заполните поле «'+name+'».'); return Fr.fromStr(s); }
+function posNum(s,name){ const f=anyNum(s,name); if(f.isNeg()||f.isZero()) throw new MErr('«'+name+'» должно быть положительным числом.'); return f; }
+function intFrom(s,name){ const f=anyNum(s,name); if(f.d!==1n) throw new MErr('«'+name+'» должно быть целым числом.'); return f.n; }
+function bigPow(baseStr, expStr){ const exp=BigInt(expStr); if(exp<0n) throw new MErr('Показатель должен быть неотрицательным целым числом.');
+  if(/^[-+]?\d+$/.test(String(baseStr))){ const base=BigInt(baseStr); let e=exp,b=base,r=1n; while(e>0n){if(e&1n)r*=b; b*=b; e>>=1n;} return r.toString(); }
+  return Fr.fromStr(baseStr).pow(Number(exp)); }
+function gcdOf(list){let g=0n; for(const v of list) g=bgcd(g,BigInt(v)); return g;}
+function lcmOf(list){let l=1n; for(const v of list){const b=BigInt(v); if(b===0n)return 0n; l=(l/bgcd(l,b))*(b<0n?-b:b);} return l;}
+function factorialOf(nInt){ if(nInt<0) throw new MErr('Факториал определён только для неотрицательных целых чисел.'); if(nInt>5000) throw new MErr('Число слишком велико.');
+  let r=1n; for(let i=2n;i<=BigInt(nInt);i++) r*=i; return r.toString(); }
+function solveQuadratic(aS,bS,cS){ const a=Fr.fromStr(aS),b=Fr.fromStr(bS),c=Fr.fromStr(cS); const steps=[];
+  if(a.isZero()){ if(b.isZero()){ if(c.isZero()) return {allReals:true,steps:['a=0, b=0, c=0']}; return {roots:[],steps:['a=0,b=0,c≠0'],note:'Решений нет.'}; }
+    const x=c.neg().div(b); steps.push('a = 0 — уравнение линейное: bx + c = 0'); steps.push('x = −c / b = '+fmt(x,'none')); return {linear:true,steps,roots:[x]}; }
+  const D=b.mul(b).sub(Fr.int(4).mul(a).mul(c)); steps.push('D = b² − 4ac = '+fmt(D,'none'));
+  if(D.isNeg()){ steps.push('D < 0 — действительных корней нет.'); return {D,roots:[],steps}; }
+  const twoA=Fr.int(2).mul(a);
+  if(D.isZero()){ const x=b.neg().div(twoA); steps.push('D = 0 — один корень: x = −b / 2a = '+fmt(x,'none')); return {D,roots:[x],steps}; }
+  const exact=D.exactSqrt(); let sq,ex; if(exact){sq=exact;ex=true;} else {sq=Fr.fromNum(Math.sqrt(D.toNum()));ex=false;}
+  const x1=b.neg().add(sq).div(twoA), x2=b.neg().sub(sq).div(twoA);
+  steps.push((ex?'√D = ':'√D ≈ ')+fmt(sq,'none')); steps.push('x₁ = (−b + √D) / 2a = '+fmt(x1,'none')); steps.push('x₂ = (−b − √D) / 2a = '+fmt(x2,'none'));
+  return {D,sqrtD:sq,roots:[x1,x2],steps,approx:!ex}; }
+
+/* ============================================================
+   АЛГЕБРА: упрощение выражений и неравенства (базовый набор)
+   ============================================================ */
+function tokenize(src){ const s=src.replace(/\s+/g,'').replace(/×/g,'*').replace(/÷/g,'/').replace(/–|—/g,'-').replace(/²/g,'^2').replace(/³/g,'^3');
+  const t=[]; let i=0; while(i<s.length){ const c=s[i];
+    if(/[0-9.]/.test(c)){ let j=i; while(j<s.length&&/[0-9.]/.test(s[j]))j++; t.push({t:'num',v:s.slice(i,j)}); i=j; }
+    else if(/[a-zA-Zа-яА-Я]/.test(c)){ t.push({t:'var',v:c}); i++; }
+    else if('+-*/^()'.includes(c)){ t.push({t:c,v:c}); i++; }
+    else throw new MErr('Неподдерживаемый символ: "'+c+'"'); } return t; }
+function parseExpr(tokens){ let pos=0; const peek=()=>tokens[pos]; const eat=(tp)=>{const tok=tokens[pos]; if(!tok||(tp&&tok.t!==tp)) throw new MErr('Ошибка в структуре выражения.'); pos++; return tok;};
+  function expr(){let n=term(); while(peek()&&(peek().t==='+'||peek().t==='-')){const op=eat().t; n={op,l:n,r:term()};} return n;}
+  function term(){let n=unary(); while(peek()&&(peek().t==='*'||peek().t==='/'||peek().t==='var'||peek().t==='(')){let op='*'; if(peek().t==='*'||peek().t==='/')op=eat().t; n={op,l:n,r:unary()};} return n;}
+  function unary(){ if(peek()&&peek().t==='-'){eat(); return {op:'neg',l:unary()};} if(peek()&&peek().t==='+'){eat(); return unary();} return pw(); }
+  function pw(){let n=atom(); if(peek()&&peek().t==='^'){eat(); n={op:'^',l:n,r:unary()};} return n;}
+  function atom(){ const tok=peek(); if(!tok) throw new MErr('Незавершённое выражение.');
+    if(tok.t==='num'){eat(); return {num:tok.v};} if(tok.t==='var'){eat(); return {var:tok.v};}
+    if(tok.t==='('){eat(); const n=expr(); eat(')'); return n;} throw new MErr('Ошибка рядом с "'+tok.v+'".'); }
+  const ast=expr(); if(pos!==tokens.length) throw new MErr('Лишние символы в конце выражения.'); return ast; }
+function monoKey(p){const k=Object.keys(p).filter(x=>p[x]!==0).sort(); return k.length?k.map(x=>x+'^'+p[x]).join('*'):'';}
+class Poly{ constructor(){this.terms=new Map();}
+  static c(fr){const p=new Poly(); if(!fr.isZero())p.terms.set('',{coef:fr,powers:{}}); return p;}
+  static v(name){const p=new Poly(); const pw={[name]:1}; p.terms.set(monoKey(pw),{coef:Fr.int(1),powers:pw}); return p;}
+  clone(){const p=new Poly(); for(const[k,v]of this.terms)p.terms.set(k,{coef:v.coef,powers:{...v.powers}}); return p;}
+  addTerm(coef,powers){ if(coef.isZero())return; const key=monoKey(powers); const ex=this.terms.get(key);
+    if(ex){const s=ex.coef.add(coef); if(s.isZero())this.terms.delete(key); else ex.coef=s;} else this.terms.set(key,{coef,powers}); }
+  add(o){const p=this.clone(); for(const[,v]of o.terms)p.addTerm(v.coef,v.powers); return p;}
+  neg(){const p=new Poly(); for(const[k,v]of this.terms)p.terms.set(k,{coef:v.coef.neg(),powers:v.powers}); return p;}
+  sub(o){return this.add(o.neg());}
+  mul(o){const p=new Poly(); for(const[,a]of this.terms)for(const[,b]of o.terms){const pw={...a.powers}; for(const vn in b.powers)pw[vn]=(pw[vn]||0)+b.powers[vn]; p.addTerm(a.coef.mul(b.coef),pw);} return p;}
+  isZero(){return this.terms.size===0;}
+  isConst(){return this.terms.size===0||(this.terms.size===1&&this.terms.has(''));}
+  constVal(){return this.terms.size===0?Fr.int(0):(this.terms.get('')?this.terms.get('').coef:null);}
+  vars(){const s=new Set(); for(const[,v]of this.terms)for(const vn in v.powers)if(v.powers[vn])s.add(vn); return [...s];}
+  toStr(){ if(this.terms.size===0)return '0';
+    const entries=[...this.terms.values()].sort((a,b)=>{const da=Object.values(a.powers).reduce((s,x)=>s+x,0),db=Object.values(b.powers).reduce((s,x)=>s+x,0); if(db!==da)return db-da; return monoKey(a.powers)<monoKey(b.powers)?-1:1;});
+    let out=''; entries.forEach((term,idx)=>{ const abs=term.coef.abs(), neg=term.coef.isNeg(); const vp=Object.keys(term.powers).filter(k=>term.powers[k]).sort().map(k=>term.powers[k]===1?k:k+'^'+term.powers[k]).join('');
+      let cs; if(vp===''){cs=abs.toStr(null);} else if(abs.eq(Fr.int(1))){cs='';} else {cs=abs.toStr(null);}
+      const piece=cs+vp; out+= idx===0?(neg?'-':'')+piece:(neg?' - ':' + ')+piece; }); return out; }
+}
+function astToPoly(node,odzList){
+  if(node.num!==undefined) return Poly.c(Fr.fromStr(node.num));
+  if(node.var!==undefined) return Poly.v(node.var);
+  if(node.op==='neg') return astToPoly(node.l,odzList).neg();
+  if(node.op==='+') return astToPoly(node.l,odzList).add(astToPoly(node.r,odzList));
+  if(node.op==='-') return astToPoly(node.l,odzList).sub(astToPoly(node.r,odzList));
+  if(node.op==='*') return astToPoly(node.l,odzList).mul(astToPoly(node.r,odzList));
+  if(node.op==='^'){ const base=astToPoly(node.l,odzList); if(node.r.num===undefined) throw new MErr('Поддерживаются только целые числовые степени.');
+    const ef=Fr.fromStr(node.r.num); if(ef.d!==1n||ef.n<0n) throw new MErr('Поддерживаются только целые неотрицательные степени.');
+    const e=Number(ef.n); if(e>12) throw new MErr('Слишком высокая степень.'); let r=Poly.c(Fr.int(1)); for(let i=0;i<e;i++)r=r.mul(base); return r; }
+  if(node.op==='/'){ const num=astToPoly(node.l,odzList), den=astToPoly(node.r,odzList); if(den.isZero()) throw new MErr('Знаменатель не может быть равен нулю.');
+    if(den.isConst()){ const dv=den.constVal(); if(dv.isZero()) throw new MErr('Знаменатель не может быть равен нулю.'); const p=new Poly(); for(const[k,v]of num.terms)p.terms.set(k,{coef:v.coef.div(dv),powers:v.powers}); return p; }
+    const dr=polyDivideExact(num,den); if(dr){ if(odzList)odzList.push(describeZeroSet(den)); return dr.quotient; }
+    throw new MErr('Не удалось корректно упростить деление — знаменатель не делит числитель нацело.'); }
+  throw new MErr('Неизвестная операция в выражении.'); }
+function polyDivideExact(numPoly,denPoly){ if(denPoly.isZero()) throw new MErr('Знаменатель не может быть равен нулю.');
+  const varOrder=[...new Set([...numPoly.vars(),...denPoly.vars()])].sort();
+  const degOf=(p)=>Object.values(p).reduce((s,x)=>s+x,0);
+  const isGreater=(a,b)=>{const da=degOf(a),db=degOf(b); if(da!==db)return da>db; for(const v of varOrder){const x=a[v]||0,y=b[v]||0; if(x!==y)return x>y;} return false;};
+  const leadTerm=(p)=>{let best=null; for(const[,t]of p.terms){if(!best||isGreater(t.powers,best.powers))best=t;} return best;};
+  const divides=(a,b)=>{for(const v of varOrder){if((a[v]||0)<(b[v]||0))return false;} return true;};
+  let cur=numPoly.clone(); const q=new Poly(); const dl=leadTerm(denPoly); if(!dl)return null; let guard=0;
+  while(!cur.isZero()){ if(++guard>500)return null; const cl=leadTerm(cur); if(!divides(cl.powers,dl.powers))return null;
+    const qp={}; for(const v of varOrder){const p=(cl.powers[v]||0)-(dl.powers[v]||0); if(p)qp[v]=p;}
+    const qc=cl.coef.div(dl.coef); q.addTerm(qc,qp); const sub=new Poly(); sub.addTerm(qc,qp); cur=cur.sub(sub.mul(denPoly)); }
+  return {quotient:q}; }
+function describeZeroSet(denPoly){ const vars=denPoly.vars(); let maxDeg=0; for(const[,t]of denPoly.terms)maxDeg=Math.max(maxDeg,Object.values(t.powers).reduce((s,x)=>s+x,0));
+  if(maxDeg>1) return denPoly.toStr()+' ≠ 0';
+  if(vars.length===1){const v=vars[0]; const c1=(denPoly.terms.get(v+'^1')||{coef:Fr.int(0)}).coef; const c0=(denPoly.terms.get('')||{coef:Fr.int(0)}).coef; if(c1.isZero())return denPoly.toStr()+' ≠ 0'; return v+' ≠ '+c0.neg().div(c1).toStr(null);}
+  if(vars.length===2){const[v1,v2]=vars; const c0=(denPoly.terms.get('')||{coef:Fr.int(0)}).coef; const c1=(denPoly.terms.get(v1+'^1')||{coef:Fr.int(0)}).coef; const c2=(denPoly.terms.get(v2+'^1')||{coef:Fr.int(0)}).coef;
+    if(c0.isZero()&&c1.eq(c2.neg()))return v1+' ≠ '+v2; if(c0.isZero()&&c1.eq(c2))return v1+' ≠ -'+v2; return denPoly.toStr()+' ≠ 0';}
+  return denPoly.toStr()+' ≠ 0'; }
+function simplifyExpr(src){ const steps=[]; let ast; try{ast=parseExpr(tokenize(src));}catch(e){throw new MErr('Не удалось разобрать выражение. '+e.message);}
+  steps.push('Исходное выражение: '+src); const odzList=[]; const poly=astToPoly(ast,odzList); const result=poly.toStr();
+  steps.push('Раскрытие скобок и приведение подобных слагаемых.'); steps.push('Результат: '+result);
+  return {steps,result,odz:odzList.length?odzList.join(', '):null}; }
+function parseInequality(src){ const s=src.replace(/\s+/g,'').replace(/≤/g,'<=').replace(/≥/g,'>='); const m=s.match(/(.+?)(<=|>=|<|>)(.+)/);
+  if(!m) throw new MErr('Не удалось найти знак неравенства (<, >, ≤, ≥).'); return {left:m[1],sign:m[2],right:m[3]}; }
+function solveInequality(src){ const {left,sign,right}=parseInequality(src); const steps=[];
+  const lp=astToPoly(parseExpr(tokenize(left))), rp=astToPoly(parseExpr(tokenize(right))); const diff=lp.sub(rp);
+  steps.push('Переносим всё влево: ('+left+') − ('+right+') '+sign+' 0'); steps.push('После приведения подобных: '+diff.toStr()+' '+sign+' 0');
+  const vars=diff.vars(); if(vars.length>1) throw new MErr('Поддерживаются неравенства только с одной переменной.');
+  if(vars.length===0){ const c=diff.constVal(); const ok={'<':c.isNeg(),'>':(!c.isNeg()&&!c.isZero()),'<=':(c.isNeg()||c.isZero()),'>=':!c.isNeg()}[sign];
+    return {steps,result:ok?'Верно при любом x.':'Решений нет.'}; }
+  const v=vars[0]; let maxDeg=0; for(const[,t]of diff.terms)maxDeg=Math.max(maxDeg,t.powers[v]||0);
+  const co=new Array(maxDeg+1).fill(null).map(()=>Fr.int(0)); for(const[,t]of diff.terms)co[t.powers[v]||0]=co[t.powers[v]||0].add(t.coef);
+  if(maxDeg>2) throw new MErr('Поддерживаются линейные и квадратные неравенства (степень ≤ 2).');
+  if(maxDeg<=1){ const a=co[1]||Fr.int(0), b=co[0]||Fr.int(0);
+    if(a.isZero()){ const ok={'<':b.isNeg(),'>':(!b.isNeg()&&!b.isZero()),'<=':(b.isNeg()||b.isZero()),'>=':!b.isNeg()}[sign]; return {steps,result:ok?'Верно при любом x.':'Решений нет.'}; }
+    let eff=sign; const x0=b.neg().div(a);
+    if(a.isNeg()){ eff={'<':'>','>':'<','<=':'>=','>=':'<='}[sign]; steps.push('Делим на отрицательное число — знак неравенства меняется.'); }
+    const x0s=x0.toStr(null); const symb=eff.replace('<=','≤').replace('>=','≥');
+    let interval; if(eff==='<')interval='(-∞; '+x0s+')'; else if(eff==='<=')interval='(-∞; '+x0s+']'; else if(eff==='>')interval='('+x0s+'; +∞)'; else interval='['+x0s+'; +∞)';
+    steps.push(v+' '+symb+' '+x0s); return {steps,result:v+' '+symb+' '+x0s+'   →   x ∈ '+interval}; }
+  const a=co[2], b=co[1]||Fr.int(0), c=co[0]||Fr.int(0); const D=b.mul(b).sub(Fr.int(4).mul(a).mul(c)); steps.push('Дискриминант: D = '+D.toStr(null));
+  const upward=!a.isNeg(); let roots=[];
+  if(!D.isNeg()){ const twoA=Fr.int(2).mul(a); const ex=D.exactSqrt(); const sq=ex||Fr.fromNum(Math.sqrt(Math.max(0,D.toNum())));
+    const r1=b.neg().add(sq).div(twoA), r2=b.neg().sub(sq).div(twoA); roots=[r1,r2].sort((x,y)=>x.cmp(y)); }
+  if(D.isNeg()){ const alwaysPos=upward; let interval,result;
+    if(sign==='>'||sign==='>='){ interval=alwaysPos?'(-∞; +∞)':'∅'; result=alwaysPos?'x — любое число':'решений нет'; }
+    else { interval=!alwaysPos?'(-∞; +∞)':'∅'; result=!alwaysPos?'x — любое число':'решений нет'; }
+    steps.push('D < 0 — знак выражения постоянен и равен знаку a.'); return {steps,result:result+'  (x ∈ '+interval+')'}; }
+  const r1s=roots[0].toStr(null), r2s=roots[1].toStr(null); const same=roots[0].eq(roots[1]);
+  if(same){ let interval; if(sign==='>')interval=upward?'(-∞; '+r1s+') ∪ ('+r1s+'; +∞)':'∅'; else if(sign==='>=')interval=upward?'(-∞; +∞)':'{'+r1s+'}';
+    else if(sign==='<')interval=upward?'∅':'(-∞; '+r1s+') ∪ ('+r1s+'; +∞)'; else interval=upward?'{'+r1s+'}':'(-∞; +∞)';
+    steps.push('Дискриминант равен нулю — двойной корень.'); return {steps,result:'x ∈ '+interval}; }
+  const outside=upward; let interval;
+  if(sign==='>')interval=outside?'(-∞; '+r1s+') ∪ ('+r2s+'; +∞)':'('+r1s+'; '+r2s+')';
+  else if(sign==='>=')interval=outside?'(-∞; '+r1s+'] ∪ ['+r2s+'; +∞)':'['+r1s+'; '+r2s+']';
+  else if(sign==='<')interval=outside?'('+r1s+'; '+r2s+')':'(-∞; '+r1s+') ∪ ('+r2s+'; +∞)';
+  else interval=outside?'['+r1s+'; '+r2s+']':'(-∞; '+r1s+'] ∪ ['+r2s+'; +∞)';
+  steps.push('Корни: x₁='+r1s+', x₂='+r2s+'. Между корнями и вне их выражение меняет знак.'); return {steps,result:'x ∈ '+interval}; }
+
+/* ============================================================
+   UI-ПОМОЩНИКИ
+   ============================================================ */
+function h(tag,attrs,children){ const el=document.createElement(tag); attrs=attrs||{};
+  for(const k in attrs){ if(k==='class')el.className=attrs[k]; else if(k==='html')el.innerHTML=attrs[k];
+    else if(k.startsWith('on')&&typeof attrs[k]==='function')el.addEventListener(k.slice(2),attrs[k]);
+    else if(attrs[k]!==undefined&&attrs[k]!==null)el.setAttribute(k,attrs[k]); }
+  (children||[]).forEach(c=>{ if(c===null||c===undefined)return; el.appendChild(typeof c==='string'?document.createTextNode(c):c); }); return el; }
+function field(id,label,ph){ const input=h('input',{id,placeholder:ph||''}); return {wrap:h('div',{class:'field'},[h('label',{for:id},[label]),input]),input}; }
+function selectF(id,label,opts){ const s=h('select',{id},opts.map(o=>h('option',{value:o.v},[o.t]))); return {wrap:h('div',{class:'field'},[h('label',{for:id},[label]),s]),input:s}; }
+function roundingCtl(onChange){ let mode='none'; const labels={none:'Без округления','1':'Десятые','2':'Сотые','3':'Тысячные'}; const btns={};
+  const wrap=h('div',{class:'rounding'},[document.createTextNode('Округление: ')]);
+  ['none','1','2','3'].forEach(k=>{ const b=h('button',{class:'btn'+(k==='none'?' active':''),type:'button',onclick:()=>{mode=k;Object.values(btns).forEach(x=>x.classList.remove('active'));b.classList.add('active');onChange(mode);}},[labels[k]]); btns[k]=b; wrap.appendChild(b); });
+  return {wrap,get:()=>mode}; }
+function resultBox(label,value){return h('div',{class:'result-box'},[h('div',{class:'label'},[label]),h('div',{class:'value'},[value])]);}
+function errorBox(msg){return h('div',{class:'error-box'},[msg]);}
+function stepsBox(steps){return h('div',{class:'steps'},[h('strong',{},['Ход решения']),h('ol',{},steps.map(s=>h('li',{},[s])))]);}
+function odzBox(t){return h('div',{class:'odz'},['ОДЗ: '+t]);}
+function simpleCalc(container,opts){
+  const fields=(opts.fields||[]).map(f=>f.select?selectF(f.id,f.label,f.opts):field(f.id,f.label,f.ph));
+  const out=h('div',{}); let last=null;
+  const rc=opts.rounding?roundingCtl((mode)=>{if(last)run(last,mode);}):null;
+  function run(values,mode){ out.innerHTML=''; try{ const res=opts.compute(values,mode||(rc?rc.get():'none'));
+      out.appendChild(resultBox(res.label||'Результат',res.value)); if(res.odz)out.appendChild(odzBox(res.odz)); if(res.steps&&res.steps.length)out.appendChild(stepsBox(res.steps)); last=values; }
+    catch(e){ out.appendChild(errorBox(e.message||'Проверьте введённые данные.')); } }
+  const btn=h('button',{class:'btn primary',type:'button',onclick:()=>{ const values={}; fields.forEach(f=>values[f.input.id]=f.input.value); run(values,rc?rc.get():'none'); }},[opts.buttonLabel||'Вычислить']);
+  container.appendChild(h('div',{},[...fields.map(f=>f.wrap), rc?rc.wrap:null, h('div',{class:'actions'},[btn]), opts.note?h('p',{class:'muted'},[opts.note]):null, out]));
+  fields.forEach(f=>f.input.addEventListener&&f.input.addEventListener('keydown',(e)=>{if(e.key==='Enter')btn.click();}));
+}
+
+/* ============================================================
+   ДАННЫЕ: калькуляторы, категории, тренажёры
+   ============================================================ */
+const CATS=[{id:'basic',t:'Основные'},{id:'algebra',t:'Алгебра'},{id:'numbers',t:'Дроби и числа'},{id:'geometry',t:'Геометрия'},{id:'powers',t:'Степени и корни'},{id:'grades',t:'Оценки'},{id:'eng',t:'Инженерные'},{id:'tools',t:'Инструменты'}];
+const CALCS=[
+ {id:'basic',cat:'basic',t:'Обычный калькулятор',d:'Сложение, вычитание, умножение, деление без ошибок округления.'},
+ {id:'percent',cat:'basic',t:'Проценты',d:'Найти X% от числа, увеличить/уменьшить на X%.'},
+ {id:'average',cat:'basic',t:'Среднее арифметическое',d:'Среднее значение любого набора чисел.'},
+ {id:'proportion',cat:'basic',t:'Пропорции',d:'Найти неизвестный член пропорции a:b = c:x.'},
+ {id:'linear',cat:'basic',t:'Простые уравнения',d:'Линейное уравнение ax + b = c.'},
+ {id:'quadratic',cat:'algebra',t:'Квадратные уравнения',d:'Решение ax²+bx+c=0 с шагами и дискриминантом.'},
+ {id:'simplify',cat:'algebra',t:'Упростить выражение',d:'Раскрытие скобок и приведение подобных слагаемых.'},
+ {id:'inequality',cat:'algebra',t:'Решение неравенств',d:'Линейные и квадратные неравенства, ответ в виде интервала.'},
+ {id:'fractions',cat:'numbers',t:'Дроби',d:'Сложение, вычитание, умножение, деление обыкновенных дробей.'},
+ {id:'gcd',cat:'numbers',t:'НОД',d:'Наибольший общий делитель нескольких чисел.'},
+ {id:'lcm',cat:'numbers',t:'НОК',d:'Наименьшее общее кратное нескольких чисел.'},
+ {id:'factorial',cat:'numbers',t:'Факториал',d:'Точное значение n! без потери точности.'},
+ {id:'geometry',cat:'geometry',t:'Геометрия: площади и объёмы',d:'Квадрат, прямоугольник, треугольник, круг, куб, цилиндр, шар, конус и др.'},
+ {id:'powers',cat:'powers',t:'Степени',d:'Возведение в степень, точные большие числа (например 92⁸).'},
+ {id:'roots',cat:'powers',t:'Корни',d:'Квадратный и произвольный корень числа.'},
+ {id:'grades',cat:'grades',t:'Калькулятор оценок',d:'Средний балл по любому числу предметов.'},
+ {id:'certificate',cat:'grades',t:'Калькулятор аттестата',d:'Средний балл аттестата по итоговым оценкам.'},
+ {id:'engineering',cat:'eng',t:'Инженерный калькулятор',d:'Тригонометрия, логарифм, корень, степень.'},
+ {id:'password',cat:'tools',t:'Генератор паролей',d:'Надёжные пароли и коды с настройкой набора символов.'}
+];
+const TRAINERS=[
+ {id:'mult-table',t:'Таблица умножения',d:'Тренировка таблицы умножения 2–9.'},
+ {id:'arith',t:'Арифметика',d:'Сложение, вычитание, умножение, деление.'},
+ {id:'fractions-tr',t:'Дроби',d:'Сложение и вычитание простых дробей.'},
+ {id:'powers-tr',t:'Степени и корни',d:'Возведение в степень и извлечение корня.'},
+ {id:'gcdlcm-tr',t:'НОД и НОК',d:'Поиск НОД и НОК пары чисел.'},
+ {id:'mixed',t:'Смешанный тест',d:'Случайный набор заданий всех типов.'}
+];
+
+/* ============================================================
+   РЕАЛИЗАЦИЯ КАЛЬКУЛЯТОРОВ
+   ============================================================ */
+const PI=Fr.fromNum(Math.PI);
+const REG={};
+REG.basic=(c)=>{
+  const a=field('bc-a','Первое число','12.5'), op=selectF('bc-op','Действие',[{v:'+',t:'Сложение (+)'},{v:'-',t:'Вычитание (−)'},{v:'*',t:'Умножение (×)'},{v:'/',t:'Деление (÷)'}]), b=field('bc-b','Второе число','7');
+  const out=h('div',{}); let last=null; const rc=roundingCtl(m=>{if(last)run(m);});
+  function run(mode){ out.innerHTML=''; try{ const fa=anyNum(a.input.value,'первое число'), fb=anyNum(b.input.value,'второе число'); let r;
+      if(op.input.value==='+')r=fa.add(fb); else if(op.input.value==='-')r=fa.sub(fb); else if(op.input.value==='*')r=fa.mul(fb); else r=fa.div(fb);
+      out.appendChild(resultBox('Результат',fmt(r,mode))); last=true; }catch(e){out.appendChild(errorBox(e.message)); last=null;} }
+  const btn=h('button',{class:'btn primary',onclick:()=>run(rc.get())},['Вычислить']);
+  c.appendChild(h('div',{},[a.wrap,op.wrap,b.wrap,rc.wrap,h('div',{class:'actions'},[btn]),out]));
+};
+REG.percent=(c)=>{
+  const a=field('pc-a','Число A','150'), op=selectF('pc-op','Что найти',[{v:'part',t:'X% от A'},{v:'inc',t:'Увеличить A на X%'},{v:'dec',t:'Уменьшить A на X%'},{v:'ratio',t:'A — сколько % от B'}]), b=field('pc-b','X (или B)','20');
+  const out=h('div',{}); let last=null; const rc=roundingCtl(m=>{if(last)run(m);});
+  function run(mode){ out.innerHTML=''; try{ const A=anyNum(a.input.value,'A'), X=anyNum(b.input.value,'X'); let val,label,post='';
+      if(op.input.value==='part'){val=A.mul(X).div(Fr.int(100)); label=X.toStr(null)+'% от '+A.toStr(null);}
+      else if(op.input.value==='inc'){val=A.add(A.mul(X).div(Fr.int(100))); label='Увеличено на '+X.toStr(null)+'%';}
+      else if(op.input.value==='dec'){val=A.sub(A.mul(X).div(Fr.int(100))); label='Уменьшено на '+X.toStr(null)+'%';}
+      else { if(X.isZero()) throw new MErr('Ошибка: деление на ноль невозможно.'); val=A.mul(Fr.int(100)).div(X); label='A составляет от B'; post='%'; }
+      out.appendChild(resultBox(label,fmt(val,mode)+post)); last=true; }catch(e){out.appendChild(errorBox(e.message)); last=null;} }
+  const btn=h('button',{class:'btn primary',onclick:()=>run(rc.get())},['Вычислить']);
+  c.appendChild(h('div',{},[a.wrap,op.wrap,b.wrap,rc.wrap,h('div',{class:'actions'},[btn]),out]));
+};
+REG.average=(c)=>simpleCalc(c,{fields:[{id:'av-n',label:'Числа через запятую',ph:'4, 8, 9'}],rounding:true,
+  compute:(v,m)=>{ const raw=(v['av-n']||'').split(/[,;\s]+/).filter(Boolean); if(!raw.length) throw new MErr('Введите хотя бы одно число.');
+    let sum=Fr.int(0); raw.forEach((s,i)=>sum=sum.add(anyNum(s,'число #'+(i+1)))); const avg=sum.div(Fr.int(raw.length));
+    return {label:'Среднее ('+raw.length+' чисел)',value:fmt(avg,m),steps:['Сумма: '+fmt(sum,'none'),'Количество: '+raw.length]}; }});
+REG.proportion=(c)=>simpleCalc(c,{fields:[{id:'pr-a',label:'a (в a:b = c:x)'},{id:'pr-b',label:'b'},{id:'pr-c',label:'c'}],rounding:true,
+  compute:(v,m)=>{ const a=anyNum(v['pr-a'],'a'), b=anyNum(v['pr-b'],'b'), cc=anyNum(v['pr-c'],'c'); if(a.isZero()) throw new MErr('Ошибка: деление на ноль невозможно.');
+    return {label:'x',value:fmt(b.mul(cc).div(a),m),steps:['x = (b × c) / a']}; }});
+REG.linear=(c)=>simpleCalc(c,{fields:[{id:'le-a',label:'a (в ax+b=c)'},{id:'le-b',label:'b'},{id:'le-c',label:'c'}],rounding:true,
+  compute:(v,m)=>{ const a=anyNum(v['le-a'],'a'), b=anyNum(v['le-b'],'b'), cc=anyNum(v['le-c'],'c');
+    if(a.isZero()){ if(b.eq(cc)) return {label:'Ответ',value:'Любое число x (уравнение верно всегда).'}; return {label:'Ответ',value:'Решений нет.'}; }
+    return {label:'x',value:fmt(cc.sub(b).div(a),m),steps:['x = (c − b) / a']}; }});
+REG.quadratic=(c)=>{
+  const a=field('q-a','a'), b=field('q-b','b'), cc=field('q-c','c'); const out=h('div',{}); let lastRes=null;
+  function render(mode){ out.innerHTML=''; if(!lastRes)return; const r=lastRes; const steps=[]; let val;
+    if(r.linear){ steps.push('a=0 — линейное уравнение: bx+c=0'); steps.push('x = −c/b = '+fmt(r.roots[0],mode)); val='x = '+fmt(r.roots[0],mode); }
+    else if(r.allReals){ val='Решение — любое число x.'; }
+    else if(r.roots&&r.roots.length===0){ val=r.note||'Действительных корней нет.'; if(r.D)steps.push('D = '+fmt(r.D,mode)); }
+    else if(r.roots.length===1){ steps.push('D = '+fmt(r.D,mode)); steps.push('D=0 — один корень: x=−b/2a='+fmt(r.roots[0],mode)); val='x = '+fmt(r.roots[0],mode); }
+    else { steps.push('D = b²−4ac = '+fmt(r.D,mode)); steps.push((r.approx?'√D ≈ ':'√D = ')+fmt(r.sqrtD,mode)); steps.push('x₁ = '+fmt(r.roots[0],mode)); steps.push('x₂ = '+fmt(r.roots[1],mode));
+      val='x₁ = '+fmt(r.roots[0],mode)+',  x₂ = '+fmt(r.roots[1],mode); }
+    out.appendChild(resultBox('Корни уравнения',val)); out.appendChild(stepsBox(steps.filter(Boolean))); }
+  const rc=roundingCtl(m=>render(m));
+  const btn=h('button',{class:'btn primary',onclick:()=>{ out.innerHTML=''; try{ lastRes=solveQuadratic(a.input.value||'0',b.input.value||'0',cc.input.value||'0'); render(rc.get()); }catch(e){out.appendChild(errorBox(e.message)); lastRes=null;} }},['Решить']);
+  c.appendChild(h('div',{},[a.wrap,b.wrap,cc.wrap,rc.wrap,h('div',{class:'actions'},[btn]),out]));
+};
+REG.simplify=(c)=>simpleCalc(c,{fields:[{id:'sx',label:'Выражение',ph:'2(x + 3) + 4x'}],rounding:false,buttonLabel:'Упростить',
+  note:'Поддерживаются: скобки, целые степени, числовые дроби, точное деление многочленов, например (a²−b²)/(a−b).',
+  compute:(v)=>{ const r=simplifyExpr(v.sx||''); return {label:'Результат',value:r.result,steps:r.steps,odz:r.odz}; }});
+REG.inequality=(c)=>simpleCalc(c,{fields:[{id:'iq',label:'Неравенство',ph:'x + 5 > 10'}],rounding:false,buttonLabel:'Решить',
+  note:'Линейные и квадратные неравенства с одной переменной. Знаки: <, >, ≤, ≥.',
+  compute:(v)=>{ const r=solveInequality(v.iq||''); return {label:'Решение',value:r.result,steps:r.steps}; }});
+REG.fractions=(c)=>{
+  const n1=field('f-n1','Числитель 1','3'), d1=field('f-d1','Знаменатель 1','4'), op=selectF('f-op','Действие',[{v:'+',t:'Сложение (+)'},{v:'-',t:'Вычитание (−)'},{v:'*',t:'Умножение (×)'},{v:'/',t:'Деление (÷)'}]), n2=field('f-n2','Числитель 2','5'), d2=field('f-d2','Знаменатель 2','8');
+  const out=h('div',{}); let last=null; const rc=roundingCtl(m=>{if(last)run(m);});
+  function run(mode){ out.innerHTML=''; try{ const dd1=intFrom(d1.input.value,'знаменатель 1'), dd2=intFrom(d2.input.value,'знаменатель 2');
+      if(dd1===0n||dd2===0n) throw new MErr('Знаменатель не может быть равен нулю.');
+      const f1=new Fr(intFrom(n1.input.value,'числитель 1'),dd1), f2=new Fr(intFrom(n2.input.value,'числитель 2'),dd2); let r;
+      if(op.input.value==='+')r=f1.add(f2); else if(op.input.value==='-')r=f1.sub(f2); else if(op.input.value==='*')r=f1.mul(f2);
+      else { if(f2.n===0n) throw new MErr('Знаменатель не может быть равен нулю.'); r=f1.div(f2); }
+      const fs=r.d===1n?r.n.toString():r.n+'/'+r.d; out.appendChild(resultBox('Результат',fs+'  =  '+fmt(r,mode))); last=true; }
+    catch(e){out.appendChild(errorBox(e.message)); last=null;} }
+  const btn=h('button',{class:'btn primary',onclick:()=>run(rc.get())},['Вычислить']);
+  c.appendChild(h('div',{},[n1.wrap,d1.wrap,op.wrap,n2.wrap,d2.wrap,rc.wrap,h('div',{class:'actions'},[btn]),out]));
+};
+REG.gcd=(c)=>simpleCalc(c,{fields:[{id:'gcd-n',label:'Числа через запятую',ph:'48, 18, 30'}],buttonLabel:'Найти НОД',
+  compute:(v)=>{ const raw=(v['gcd-n']||'').split(/[,;\s]+/).filter(Boolean); if(raw.length<2) throw new MErr('Введите не менее двух целых чисел.');
+    const ints=raw.map((s,i)=>intFrom(s,'число #'+(i+1))); if(ints.some(x=>x===0n)) throw new MErr('Введите ненулевые числа.'); return {label:'НОД',value:gcdOf(ints).toString()}; }});
+REG.lcm=(c)=>simpleCalc(c,{fields:[{id:'lcm-n',label:'Числа через запятую',ph:'4, 6'}],buttonLabel:'Найти НОК',
+  compute:(v)=>{ const raw=(v['lcm-n']||'').split(/[,;\s]+/).filter(Boolean); if(raw.length<2) throw new MErr('Введите не менее двух целых чисел.');
+    const ints=raw.map((s,i)=>intFrom(s,'число #'+(i+1))); if(ints.some(x=>x===0n)) throw new MErr('Введите ненулевые числа.'); return {label:'НОК',value:lcmOf(ints).toString()}; }});
+REG.factorial=(c)=>simpleCalc(c,{fields:[{id:'fa-n',label:'n',ph:'10'}],buttonLabel:'Вычислить n!',
+  compute:(v)=>{ const n=intFrom(v['fa-n'],'n'); if(n<0n) throw new MErr('Факториал определён только для неотрицательных целых чисел.'); return {label:n+'!',value:factorialOf(Number(n))}; }});
+REG.powers=(c)=>simpleCalc(c,{fields:[{id:'p-base',label:'Основание'},{id:'p-exp',label:'Показатель степени (целое)'}],rounding:true,
+  note:'Целые степени целых чисел — точный результат без научной записи (например 92⁸).',
+  compute:(v,m)=>{ const baseStr=(v['p-base']||'').trim(); const ef=anyNum(v['p-exp'],'показатель'); if(ef.d!==1n) throw new MErr('Показатель должен быть целым числом.'); const exp=ef.n;
+    if(exp<0n){ const pr=bigPow(baseStr,(-exp).toString()); const fr=typeof pr==='string'?new Fr(BigInt(pr),1n):pr; if(fr.isZero()) throw new MErr('Ошибка: деление на ноль невозможно.'); return {label:baseStr+'^'+exp,value:fmt(Fr.int(1).div(fr),m)}; }
+    const r=bigPow(baseStr,exp.toString()); return {label:baseStr+'^'+exp,value:typeof r==='string'?r:fmt(r,m)}; }});
+REG.roots=(c)=>simpleCalc(c,{fields:[{id:'r-x',label:'Число'},{id:'r-n',label:'Степень корня',ph:'2'}],rounding:true,
+  compute:(v,m)=>{ const x=anyNum(v['r-x'],'число'); const nf=anyNum(v['r-n']||'2','степень корня'); if(nf.d!==1n||nf.n<1n) throw new MErr('Степень корня — целое число ≥1.'); const n=Number(nf.n);
+    if(x.isNeg()&&n%2===0) throw new MErr('Корень чётной степени из отрицательного числа невозможен.');
+    if(n===2){ const ex=x.exactSqrt(); if(ex) return {label:'√'+x.toStr(null),value:fmt(ex,m)}; }
+    const val=Math.sign(x.toNum())*Math.pow(Math.abs(x.toNum()),1/n); return {label:n+'-й корень из '+x.toStr(null),value:fmtNum(val,m)}; }});
+REG.grades=(c)=>{
+  const gs=h('div',{}); const total=h('strong',{},['0.00']);
+  function addRow(){ const row=h('div',{class:'subject'}); const rowFields=h('div',{class:'gradesrow'});
+    [5,4,3,2].forEach(g=>{ const inp=h('input',{type:'number',min:'0',value:'0',oninput:recalc}); inp.dataset.g=g; rowFields.appendChild(h('div',{class:'field'},[h('label',{},[String(g)]),inp])); });
+    row.appendChild(h('div',{class:'head'},[h('input',{placeholder:'Название предмета'}),h('button',{class:'btn remove',onclick:()=>{row.remove();recalc();}},['Удалить'])])); row.appendChild(rowFields); gs.appendChild(row); recalc(); }
+  function recalc(){ let s=0,n=0; gs.querySelectorAll('input[type=number]').forEach(i=>{const a=Math.max(0,+i.value||0); s+=a*(+i.dataset.g); n+=a;}); total.textContent=n?(s/n).toFixed(2):'0.00'; }
+  c.appendChild(h('div',{},[h('p',{class:'muted'},['Добавляйте сколько угодно предметов.']),gs,h('div',{class:'actions'},[h('button',{class:'btn primary',onclick:addRow},['+ Добавить предмет'])]),h('div',{class:'total'},['Общий средний балл: ',total])])); addRow();
+};
+REG.certificate=(c)=>{
+  const cs=h('div',{}); const total=h('strong',{},['0.00']);
+  function addRow(){ const row=h('div',{class:'subject'}); const sel=h('select',{onchange:recalc},[5,4,3,2].map(g=>h('option',{value:g},[String(g)])));
+    row.appendChild(h('div',{class:'head'},[h('input',{placeholder:'Название предмета'}),h('button',{class:'btn remove',onclick:()=>{row.remove();recalc();}},['Удалить'])]));
+    row.appendChild(h('div',{class:'field'},[h('label',{},['Итоговая оценка']),sel])); cs.appendChild(row); recalc(); }
+  function recalc(){ const g=[...cs.querySelectorAll('select')].map(s=>+s.value); total.textContent=g.length?(g.reduce((a,b)=>a+b,0)/g.length).toFixed(2):'0.00'; }
+  c.appendChild(h('div',{},[h('p',{class:'muted'},['Количество предметов не ограничено.']),cs,h('div',{class:'actions'},[h('button',{class:'btn primary',onclick:addRow},['+ Добавить предмет'])]),h('div',{class:'total'},['Средний балл аттестата: ',total])])); addRow();
+};
+REG.engineering=(c)=>{
+  const display=h('input',{class:'display',value:'0',readonly:'readonly'}); let expr='0'; let mode='none';
+  function setDisplay(v){display.value=v;}
+  function evalExpr(str,m){ const ast=parseExpr(tokenize(str)); const poly=astToPoly(ast); if(!poly.isConst()) throw new MErr('В выражении не должно быть букв.'); return fmt(poly.constVal()||Fr.int(0),m); }
+  const rc=roundingCtl(m=>{mode=m; try{setDisplay(evalExpr(expr,mode)); expr=display.value;}catch(e){}});
+  const errBox=h('div',{class:'error-box',style:'display:block;min-height:0;margin-top:8px'},['']);
+  function ap(v){expr=(expr==='0'&&/[0-9.]/.test(v))?v:expr+v; setDisplay(expr);}
+  function cl(){expr='0'; setDisplay(expr); errBox.textContent='';}
+  function del(){expr=expr.length>1?expr.slice(0,-1):'0'; setDisplay(expr);}
+  function eq(){ try{ setDisplay(evalExpr(expr,mode)); expr=display.value; errBox.textContent=''; }catch(e){ setDisplay('Ошибка'); errBox.textContent=e.message; expr='0'; } }
+  function un(t){ let v=Number(display.value); if(Number.isNaN(v)){errBox.textContent='Сначала введите число.'; return;}
+    try{ let z; if(t==='sqrt'){ if(v<0) throw new MErr('Корень из отрицательного числа невозможен.'); z=Math.sqrt(v); }
+      else if(t==='sin')z=Math.sin(v*Math.PI/180); else if(t==='cos')z=Math.cos(v*Math.PI/180);
+      else if(t==='tan'){ const rad=v*Math.PI/180; if(Math.abs(Math.cos(rad))<1e-10) throw new MErr('Тангенс не определён в этой точке.'); z=Math.tan(rad); }
+      else { if(v<=0) throw new MErr('Логарифм определён только для положительных чисел.'); z=Math.log10(v); }
+      setDisplay(fmtNum(z,mode)); expr=display.value; errBox.textContent=''; }catch(e){ errBox.textContent=e.message; } }
+  const keysDef=[['C',cl],['⌫',del],['√',()=>un('sqrt')],['xʸ',()=>ap('^')],['7',()=>ap('7')],['8',()=>ap('8')],['9',()=>ap('9')],['÷',()=>ap('/')],
+    ['4',()=>ap('4')],['5',()=>ap('5')],['6',()=>ap('6')],['×',()=>ap('*')],['1',()=>ap('1')],['2',()=>ap('2')],['3',()=>ap('3')],['−',()=>ap('-')],
+    ['0',()=>ap('0')],['.',()=>ap('.')],['=',eq],['+',()=>ap('+')],['sin',()=>un('sin')],['cos',()=>un('cos')],['tan',()=>un('tan')],['log',()=>un('log')]];
+  const keys=h('div',{class:'keys'},keysDef.map(([l,fn])=>h('button',{onclick:fn},[l])));
+  c.appendChild(h('div',{},[display,rc.wrap,keys,errBox,h('p',{class:'muted'},['Большие целые степени выводятся полностью, например 92^8 = 5132188731375616.'])]));
+};
+REG.password=(c)=>{
+  const len=h('input',{id:'pw-len',type:'number',min:'4',max:'256',value:'16'});
+  const lo=h('input',{id:'pw-lo',type:'checkbox',checked:'checked'}), up=h('input',{id:'pw-up',type:'checkbox',checked:'checked'}), nu=h('input',{id:'pw-nu',type:'checkbox',checked:'checked'}), sy=h('input',{id:'pw-sy',type:'checkbox',checked:'checked'});
+  const pwOut=h('div',{class:'password'},['Нажмите «Сгенерировать»']);
+  function gen(){ let chars=''; if(lo.checked)chars+='abcdefghijklmnopqrstuvwxyz'; if(up.checked)chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ'; if(nu.checked)chars+='0123456789'; if(sy.checked)chars+='!@#$%^&*()-_=+[]{}';
+    if(!chars){pwOut.textContent='Выберите хотя бы один набор символов.'; return;} const n=Math.min(256,Math.max(4,+len.value||16)); const arr=new Uint32Array(n); crypto.getRandomValues(arr);
+    pwOut.textContent=[...arr].map(x=>chars[x%chars.length]).join(''); }
+  async function copy(){ try{ await navigator.clipboard.writeText(pwOut.textContent); }catch(e){} }
+  c.appendChild(h('div',{},[
+    h('div',{class:'field'},[h('label',{},['Длина']),len]),
+    h('label',{class:'check'},[lo,' Строчные буквы']), h('label',{class:'check'},[up,' Заглавные буквы']), h('label',{class:'check'},[nu,' Цифры']), h('label',{class:'check'},[sy,' Символы']),
+    h('div',{class:'actions'},[h('button',{class:'btn primary',onclick:gen},['Сгенерировать']),h('button',{class:'btn',onclick:copy},['Копировать'])]), pwOut ]));
+};
+// Геометрия — один инструмент с выбором фигуры
+const SHAPES={
+  'square-a':{t:'Квадрат — площадь',f:[{id:'a',l:'Сторона a'}],formula:'S = a²',run:(v,m)=>{const a=posNum(v.a,'сторона'); return {label:'Площадь S',value:fmt(a.mul(a),m)};}},
+  'square-p':{t:'Квадрат — периметр',f:[{id:'a',l:'Сторона a'}],formula:'P = 4a',run:(v,m)=>{const a=posNum(v.a,'сторона'); return {label:'Периметр P',value:fmt(a.mul(Fr.int(4)),m)};}},
+  'rect-a':{t:'Прямоугольник — площадь',f:[{id:'a',l:'Сторона a'},{id:'b',l:'Сторона b'}],formula:'S = a × b',run:(v,m)=>{const a=posNum(v.a,'a'),b=posNum(v.b,'b'); return {label:'Площадь S',value:fmt(a.mul(b),m)};}},
+  'rect-p':{t:'Прямоугольник — периметр',f:[{id:'a',l:'Сторона a'},{id:'b',l:'Сторона b'}],formula:'P = 2(a+b)',run:(v,m)=>{const a=posNum(v.a,'a'),b=posNum(v.b,'b'); return {label:'Периметр P',value:fmt(a.add(b).mul(Fr.int(2)),m)};}},
+  'tri-a':{t:'Треугольник — площадь',f:[{id:'a',l:'Основание a'},{id:'h',l:'Высота h'}],formula:'S = a×h/2',run:(v,m)=>{const a=posNum(v.a,'основание'),hh=posNum(v.h,'высота'); return {label:'Площадь S',value:fmt(a.mul(hh).div(Fr.int(2)),m)};}},
+  'circle-a':{t:'Круг — площадь',f:[{id:'r',l:'Радиус r'}],formula:'S = πr²',run:(v,m)=>{const r=posNum(v.r,'радиус'); return {label:'Площадь S',value:fmt(PI.mul(r).mul(r),m)};}},
+  'circle-l':{t:'Окружность — длина',f:[{id:'r',l:'Радиус r'}],formula:'L = 2πr',run:(v,m)=>{const r=posNum(v.r,'радиус'); return {label:'Длина L',value:fmt(Fr.int(2).mul(PI).mul(r),m)};}},
+  'cube-v':{t:'Куб — объём',f:[{id:'a',l:'Сторона a'}],formula:'V = a³',run:(v,m)=>{const a=posNum(v.a,'сторона'); return {label:'Объём V',value:fmt(a.mul(a).mul(a),m)};}},
+  'cuboid-v':{t:'Параллелепипед — объём',f:[{id:'a',l:'Длина a'},{id:'b',l:'Ширина b'},{id:'h',l:'Высота h'}],formula:'V = a×b×h',run:(v,m)=>{const a=posNum(v.a,'a'),b=posNum(v.b,'b'),hh=posNum(v.h,'h'); return {label:'Объём V',value:fmt(a.mul(b).mul(hh),m)};}},
+  'cyl-v':{t:'Цилиндр — объём',f:[{id:'r',l:'Радиус r'},{id:'h',l:'Высота h'}],formula:'V = πr²h',run:(v,m)=>{const r=posNum(v.r,'радиус'),hh=posNum(v.h,'высота'); return {label:'Объём V',value:fmt(PI.mul(r).mul(r).mul(hh),m)};}},
+  'sphere-v':{t:'Шар — объём',f:[{id:'r',l:'Радиус r'}],formula:'V = (4/3)πr³',run:(v,m)=>{const r=posNum(v.r,'радиус'); return {label:'Объём V',value:fmt(Fr.int(4).div(Fr.int(3)).mul(PI).mul(r).mul(r).mul(r),m)};}},
+  'cone-v':{t:'Конус — объём',f:[{id:'r',l:'Радиус r'},{id:'h',l:'Высота h'}],formula:'V = (1/3)πr²h',run:(v,m)=>{const r=posNum(v.r,'радиус'),hh=posNum(v.h,'высота'); return {label:'Объём V',value:fmt(PI.mul(r).mul(r).mul(hh).div(Fr.int(3)),m)};}}
+};
+REG.geometry=(c)=>{
+  const shapeSel=selectF('geo-shape','Фигура и величина',Object.keys(SHAPES).map(k=>({v:k,t:SHAPES[k].t})));
+  const fieldsWrap=h('div',{}); const formulaBox=h('div',{class:'formula'},['']); const out=h('div',{}); let rc=null;
+  function buildFields(){ fieldsWrap.innerHTML=''; const shape=SHAPES[shapeSel.input.value]; formulaBox.textContent='Формула: '+shape.formula;
+    const fs=shape.f.map(f=>field('geo-'+f.id,f.l)); fs.forEach(f=>fieldsWrap.appendChild(f.wrap));
+    out.innerHTML=''; const rcWrap=h('div',{}); rc=roundingCtl(m=>{ /* recompute on rounding change if needed */ if(lastVals)compute(lastVals,m); }); rcWrap.appendChild(rc.wrap);
+    fieldsWrap.appendChild(rcWrap);
+    const btn=h('button',{class:'btn primary',onclick:()=>{ const vals={}; shape.f.forEach(f=>vals[f.id]=document.getElementById('geo-'+f.id).value); compute(vals, rc.get()); }},['Вычислить']);
+    fieldsWrap.appendChild(h('div',{class:'actions'},[btn]));
+    fieldsWrap.appendChild(out);
+  }
+  let lastVals=null;
+  function compute(vals,mode){ out.innerHTML=''; try{ const shape=SHAPES[shapeSel.input.value]; const res=shape.run(vals,mode); out.appendChild(resultBox(res.label,res.value)); lastVals=vals; }catch(e){out.appendChild(errorBox(e.message)); lastVals=null;} }
+  shapeSel.input.addEventListener('change',buildFields);
+  c.appendChild(h('div',{},[shapeSel.wrap,formulaBox,fieldsWrap])); buildFields();
+};
+
+/* ============================================================
+   ТРЕНАЖЁРЫ
+   ============================================================ */
+function randInt(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function gcdInt(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;}
+function shuffle(arr){return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);}
+const TGEN={
+ 'mult-table':()=>{const a=randInt(2,9),b=randInt(2,9),correct=a*b; const opts=new Set([correct]); while(opts.size<4)opts.add(Math.max(1,correct+randInt(-10,10)));
+   return {prompt:a+' × '+b+' = ?',kind:'choice',choices:shuffle([...opts]).map(String),isCorrect:s=>Number(s)===correct};},
+ 'arith':()=>{ const ops=['+','-','×','÷']; const op=ops[randInt(0,3)];
+   if(op==='+'){const a=randInt(1,100),b=randInt(1,100); return {prompt:a+' + '+b+' = ?',kind:'input',isCorrect:s=>Number(s)===a+b};}
+   if(op==='-'){const a=randInt(1,100),b=randInt(1,100); return {prompt:a+' − '+b+' = ?',kind:'input',isCorrect:s=>Number(s)===a-b};}
+   if(op==='×'){const a=randInt(2,20),b=randInt(2,20); return {prompt:a+' × '+b+' = ?',kind:'input',isCorrect:s=>Number(s)===a*b};}
+   const b=randInt(2,12),k=randInt(2,12),a=b*k; return {prompt:a+' ÷ '+b+' = ?',kind:'input',isCorrect:s=>Number(s)===k}; },
+ 'fractions-tr':()=>{ const d1=randInt(2,10),d2=randInt(2,10),n1=randInt(1,d1-1),n2=randInt(1,d2-1); const op=Math.random()<0.5?'+':'-';
+   const f1=new Fr(BigInt(n1),BigInt(d1)),f2=new Fr(BigInt(n2),BigInt(d2)); const res=op==='+'?f1.add(f2):f1.sub(f2);
+   return {prompt:n1+'/'+d1+' '+op+' '+n2+'/'+d2+' = ? (в виде a/b)',kind:'input',isCorrect:s=>{const m=String(s).trim().match(/^(-?\d+)\s*\/\s*(\d+)$/); if(!m)return false; try{return new Fr(BigInt(m[1]),BigInt(m[2])).eq(res);}catch(e){return false;}}};},
+ 'powers-tr':()=>{ if(Math.random()<0.5){ const base=randInt(2,10),exp=randInt(2,4); return {prompt:base+'^'+exp+' = ?',kind:'input',isCorrect:s=>Number(s)===Math.pow(base,exp)}; }
+   const base=randInt(2,20),sq=base*base; return {prompt:'√'+sq+' = ?',kind:'input',isCorrect:s=>Number(s)===base}; },
+ 'gcdlcm-tr':()=>{ const a=randInt(4,40),b=randInt(4,40); const g=gcdInt(a,b),l=a*b/g; const askGcd=Math.random()<0.5;
+   return {prompt:(askGcd?'НОД':'НОК')+'('+a+', '+b+') = ?',kind:'input',isCorrect:s=>Number(s)===(askGcd?g:l)}; }
+};
+TGEN.mixed=()=>{const keys=Object.keys(TGEN).filter(k=>k!=='mixed'); return TGEN[keys[randInt(0,keys.length-1)]]();};
+function mountTrainer(container,id){
+  const gen=TGEN[id]; let score=0,total=0,current=null,startTime=Date.now(),timerHandle=null; const TOTAL=10;
+  const statBox=h('div',{class:'trainer-stats'}); const timerEl=h('span',{},['00:00']); const qBox=h('div',{class:'trainer-q'});
+  const answerArea=h('div',{}); const feedback=h('div',{class:'feedback'}); const nextBtn=h('button',{class:'btn primary',style:'display:none'},['Следующий вопрос']); const restartBtn=h('button',{class:'btn'},['Начать заново']);
+  function updateStats(){ statBox.innerHTML=''; statBox.appendChild(h('span',{},['Вопрос: ',h('b',{},[String(Math.min(total+1,TOTAL))+' / '+TOTAL])])); statBox.appendChild(h('span',{},['Правильно: ',h('b',{},[String(score)])])); statBox.appendChild(h('span',{},['Время: ',timerEl])); }
+  function tick(){ const s=Math.floor((Date.now()-startTime)/1000); timerEl.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+  function nextQuestion(){ if(total>=TOTAL)return finish(); current=gen(); qBox.textContent=current.prompt; feedback.textContent=''; feedback.className='feedback'; answerArea.innerHTML=''; nextBtn.style.display='none';
+    if(current.kind==='choice'){ const optsWrap=h('div',{class:'trainer-opts'}); current.choices.forEach(choice=>{ const b=h('button',{onclick:()=>{[...optsWrap.children].forEach(x=>x.disabled=true); check(choice,b);}},[choice]); optsWrap.appendChild(b); }); answerArea.appendChild(optsWrap); }
+    else { const input=h('input',{type:'text',placeholder:'Ваш ответ'}); const submit=h('button',{class:'btn primary',onclick:()=>check(input.value,null)},['Проверить']); input.addEventListener('keydown',e=>{if(e.key==='Enter')submit.click();}); answerArea.appendChild(h('div',{class:'answer-row'},[input,submit])); setTimeout(()=>input.focus(),0); }
+    updateStats(); }
+  function check(ans,btnEl){ const ok=current.isCorrect(ans); total++; if(ok){score++; feedback.textContent='Верно!'; feedback.className='feedback ok'; if(btnEl)btnEl.classList.add('correct');} else {feedback.textContent='Неверно.'; feedback.className='feedback bad'; if(btnEl)btnEl.classList.add('wrong');}
+    updateStats(); nextBtn.textContent = total>=TOTAL?'Показать результат':'Следующий вопрос'; nextBtn.style.display='inline-block'; }
+  function finish(){ clearInterval(timerHandle); qBox.textContent='Тест завершён!'; answerArea.innerHTML=''; feedback.textContent=''; nextBtn.style.display='none'; answerArea.appendChild(resultBox('Результат',score+' из '+TOTAL+' правильно')); }
+  nextBtn.addEventListener('click',()=>{ if(total>=TOTAL)finish(); else nextQuestion(); });
+  restartBtn.addEventListener('click',()=>{ score=0;total=0;startTime=Date.now(); clearInterval(timerHandle); timerHandle=setInterval(tick,1000); nextQuestion(); });
+  container.appendChild(h('div',{},[statBox,qBox,answerArea,feedback,h('div',{class:'actions'},[nextBtn,restartBtn])]));
+  timerHandle=setInterval(tick,1000); nextQuestion();
+}
+
+/* ============================================================
+   СБОРКА СТРАНИЦЫ: карточки, поиск, категории, модальные панели
+   ============================================================ */
+const catTitle={}; CATS.forEach(c=>catTitle[c.id]=c.t);
+function renderCalcGrid(filterCat){
+  const grid=document.getElementById('calcGrid'); grid.innerHTML='';
+  CALCS.filter(c=>!filterCat||filterCat==='all'||c.cat===filterCat).forEach(c=>{
+    grid.appendChild(h('div',{class:'calc-card',onclick:()=>openCalc(c.id)},[h('span',{class:'name'},[c.t]),h('span',{class:'desc'},[c.d]),h('span',{class:'badge'},[catTitle[c.cat]])]));
+  });
+}
+function renderPills(){ const pillsWrap=document.getElementById('pills'); pillsWrap.innerHTML='';
+  const all=h('button',{class:'pill active',onclick:()=>selectPill('all',all)},['Все']); pillsWrap.appendChild(all);
+  CATS.forEach(cat=>{ const b=h('button',{class:'pill',onclick:()=>selectPill(cat.id,b)},[cat.t]); pillsWrap.appendChild(b); });
+}
+function selectPill(id,btn){ document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active')); btn.classList.add('active'); renderCalcGrid(id); }
+function renderTrainerGrid(){ const grid=document.getElementById('trainerGrid'); grid.innerHTML='';
+  TRAINERS.forEach(t=>{ grid.appendChild(h('div',{class:'calc-card',onclick:()=>openTrainer(t.id)},[h('span',{class:'name'},[t.t]),h('span',{class:'desc'},[t.d])])); });
+}
+const overlay=document.getElementById('overlay'), panel=document.getElementById('panel');
+function openPanel(title,buildFn){ panel.innerHTML=''; panel.appendChild(h('button',{class:'close',onclick:closePanel},['✕'])); panel.appendChild(h('h3',{},[title]));
+  const mount=h('div',{}); panel.appendChild(mount); overlay.classList.add('open'); document.body.style.overflow='hidden'; buildFn(mount); }
+function closePanel(){ overlay.classList.remove('open'); document.body.style.overflow=''; panel.innerHTML=''; }
+overlay.addEventListener('click',(e)=>{ if(e.target===overlay) closePanel(); });
+document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closePanel(); });
+function openCalc(id){ const c=CALCS.find(x=>x.id===id); if(!c)return; openPanel(c.t,(mount)=>{ try{ REG[id](mount); }catch(e){ mount.appendChild(errorBox('Не удалось загрузить калькулятор.')); } }); }
+function openTrainer(id){ const t=TRAINERS.find(x=>x.id===id); if(!t)return; openPanel(t.t,(mount)=>mountTrainer(mount,id)); }
+
+// Поиск
+function stemQ(q){ if(q.length>=6)return q.slice(0,-2); if(q.length>=4)return q.slice(0,-1); return q; }
+const searchInput=document.getElementById('search'), searchResults=document.getElementById('searchResults');
+searchInput.addEventListener('input',()=>{ const q=searchInput.value.trim().toLowerCase(); searchResults.style.display=q?'block':'none'; if(!q){searchResults.innerHTML='';return;}
+  const qs=stemQ(q); const list=CALCS.filter(c=>{ const t=c.t.toLowerCase(), d=c.d.toLowerCase(); return t.includes(q)||t.includes(qs)||d.includes(q)||d.includes(qs); });
+  searchResults.innerHTML=''; list.slice(0,10).forEach(c=>{ const a=h('a',{href:'#',onclick:(e)=>{e.preventDefault(); searchResults.style.display='none'; searchInput.value=''; openCalc(c.id);}},[h('div',{},[c.t]),h('div',{class:'cat'},[catTitle[c.cat]])]); searchResults.appendChild(a); }); });
+document.addEventListener('click',(e)=>{ if(!searchResults.contains(e.target)&&e.target!==searchInput) searchResults.style.display='none'; });
+
+renderPills(); renderCalcGrid('all'); renderTrainerGrid();
+</script>
+</body></html>
